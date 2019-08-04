@@ -1,9 +1,10 @@
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from hashlib import md5
+from random import random
 
 def index(request):
-  return render(request, 'index.html', {'title': 'Hello World'})
+  return render(request, 'index.html', { "title": "タイトル", "message": "メッセージ" })
 
 def hoge(request):
   if request.method == 'POST':

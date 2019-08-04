@@ -1,9 +1,32 @@
-<!doctype html>
+{% extends "theme.html" %}
+{% block title %}Hello World{% endblock %}
+{% block head %}
+  {{ block.super }}
+  <style type="text/css">
+    body {
+      background-color: #ababab;
+    }
+  </style>
+{% endblock %}
+{% block content %}
+    <h1>{{ title }}</h1>
+    <p>
+      {{ message }}
+    </p>
+{% endblock %}
+
+
+{% comment %} <!doctype html>
 <html>
   <head>
     <meta charset="utf-8" />
   </head>
   <body>
-    <h1>{{title}}</h1>
+    <ul>
+      {# コメントアウト #}
+      {% for item in l %}
+        <li>{{item}}</li>
+      {% endfor %}
+    </ul>
   </body>
-</html>
+</html> {% endcomment %}
