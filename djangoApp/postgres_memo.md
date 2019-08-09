@@ -19,8 +19,11 @@ psql djangoapp
 # show database
 \l
 
+# change database
+\c database
+
 # show table list
-\d
+\dt
 
 # create table
 CREATE TABLE languages ( name varchar(64), developer varchar(128), date date );
@@ -41,6 +44,9 @@ SELECT * FROM languages WHERE developer = 'Matumoto Yukihiro';
 SELECT * FROM languages WHERE developer = 'Matumoto Yukihiro' AND name = 'Ruby';
 SELECT * FROM languages WHERE developer = 'Matumoto Yukihiro' OR developer = 'Guido Van Rossum';
 SELECT * FROM languages ORDER BY date;
+
+# get data
+SELECT * FROM "djangoApp_feed";
 
 # update data
 UPDATE languages SET developer = 'まつもとゆきひろ' WHERE developer = 'Matumoto Yukihiro';

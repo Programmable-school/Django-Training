@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8">
+  </head>
+  <body>
+    <table class="table">
+      <thead>
+        <tr>
+          <th scope="col"></th>
+          <th scope="col">タイトル</th>
+          <th scope="col">説明</th>
+          <th scope="col">フィードのURL</th>
+        </tr>
+      </thead>
+      <tbody>
+      {% for feed in feeds %}
+        <tr>
+          <th scope="row">{{ forloop.counter }}</th>
+          <td>{{ feed.title }}</td>
+          <td>{{ feed.description }}</td>
+          <td>{{ feed.href }}</td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </body>
+</html>
