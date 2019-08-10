@@ -33,3 +33,15 @@ def delete(request):
     feed = Feed.objects.get(id=request.POST['id'])
     feed.delete()
     return redirect(to="/")
+
+def page_post(request):
+  if request.method == 'POST' and request.POST['title'] and request.POST['href'] and request.POST['description']:
+    feed = Feed.objects.get(id=request.POST['id'])
+    page = Page.objects.create(
+      title=request.POST['title'],
+      description=request.POST['description'],
+      href=request.POST['href'],
+      feed=Feed
+    )
+    page.save()
+  return redirect(to="/")

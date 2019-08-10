@@ -20,13 +20,6 @@
           <td>{{ feed.title }}</td>
           <td>{{ feed.description }}</td>
           <td>{{ feed.href }}</td>
-          <td>
-            <form action="/delete" method="POST">
-              {% csrf_token %}
-              <input name="id" type="hidden" value="{{ feed.id }}" />
-              <button type="submit">削除</button>
-            </form>
-          </td>
         </tr>
       {% endfor %}
       </tbody>
