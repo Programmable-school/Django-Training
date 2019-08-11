@@ -1,0 +1,11 @@
+<form action="/page_post" method="POST">
+  {% csrf_token %}
+  {% for field in form %}
+    {% if field.name == "id" %}
+      {{ field.as_hidden }}
+    {% else %}
+      {{ field }}
+    {% endif %}
+  {% endfor %}
+  <button type="submit">送信</button>
+</form>

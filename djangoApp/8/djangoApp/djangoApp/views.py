@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect
 from .models import Feed
 from .forms import FeedForm
+from .forms import PageForm
 
 def index(request):
   feeds = Feed.objects.all()
@@ -36,12 +37,16 @@ def delete(request):
 
 def page_post(request):
   if request.method == 'POST' and request.POST['title'] and request.POST['href'] and request.POST['description']:
-    feed = Feed.objects.get(id=request.POST['id'])
-    page = Page.objects.create(
-      title=request.POST['title'],
-      description=request.POST['description'],
-      href=request.POST['href'],
-      feed=Feed
-    )
-    page.save()
+      feed = Feed.objects.get(id=request.POST["id"])
+      page = Page.objects.create(
+        title=request.POST['title'],
+        description=request.POST['description'],
+        href=request.POST['href'],
+        feed=feed
+      )
+      page.save()
   return redirect(to="/")
+
+def page_form(request):
+  form = PageForm({'id': request.GET['id']})
+  return render(request, 'page_form.html', {'form': form})
