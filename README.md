@@ -1,10 +1,17 @@
 # Django-Training
 
-> Django + MySQLでWeb開発
+> Django + PostgreSQLでWeb開発
 
 ## 目次
 - [環境構築](#環境構築)
 - [Hello Worldを表示](#トレーニング)
+- [ルーティング](#ルーティング)
+- リクエストメソッド
+- 静的ファイルの利用
+- htmlのレンダリング
+- DTLの利用
+- Bootstrapの利用
+- PostgreSQLの利用
 
 
 ## 開発環境
@@ -120,7 +127,7 @@ djangoLesson/views.py を作成して、次のコードを実装します。
 ```python
 from django.http import HttpResponse
 
-def helloWorld(request):
+def index(request):
   return HttpResponse("Hello World")
 ```
 
@@ -133,20 +140,114 @@ from django.urls import path
 from . import views # 追加
 
 urlpatterns = [
-    path('helloWorld/', views.helloWorld), # 追加
+    path('', views.index), # 追加
     path('admin/', admin.site.urls),
 ]
 ```
 
-urls.pyではURLとルーティングで表示させたいページとを紐づけます。
+urls.py では パス とルーティングで表示させたい view とを紐づけます。
 
-この場合 http://127.0.0.1:8000/helloWorld/ と views.py で実装した helloWorld関数 が紐づきます。
+この場合 http://127.0.0.1:8000/ と views.py で実装した index関数 が紐づきます。
 
-helloWorld関数では HttpResponse を使って Hello World の文字列を返しているだけなので、URLへアクセスすると画面上に Hello World が表示されます。
+index関数では HttpResponse を使って Hello World の文字列を返しているだけなので、アクセスすると画面上に Hello World が表示されます。
 
-ブラウザで http://127.0.0.1:8000/helloWorld/ を開くと次の画面が表示されます。
+ブラウザで http://127.0.0.1:8000/ を開くと次の画面が表示されます。
 
 <img src="./images/lesson1_helloWorld.png" width="50%">
+
+### ルーティング
+
+ページを追加する場合は、ルーティングの設定を行います。
+
+djangoLesson/urls.py に追加したいページの パス を path() を使用して追加します。
+
+2つのページを追加してみます。
+
+djangoLesson/views.py に次の関数を追加します。
+
+```python
+def hoge(request):
+  return HttpResponse("hoge")
+
+def fuga(request):
+  return HttpResponse("fuga")
+```
+
+djangoLesson/urls.py に hoge と fuga をルーティングへ追加します。
+
+```python
+urlpatterns = [
+    path('', views.index),
+    path('hoge/', views.hoge), # 追加
+    path('fuga/', views.fuga), # 追加
+    path('admin/', admin.site.urls),
+]
+```
+
+ブラウザで http://127.0.0.1:8000/hoge/ と http://127.0.0.1:8000/fuga/ にアクセスするとページが表示されます。
+
+##### パスごとに設定ファイルを分ける
+
+特定のパスに対応する処理を追加することができます。「アプリケーションを追加する」と呼んでいます。
+
+例えば http://127.0.0.1:8000/dapp/ というURLに対する処理を一括で追加することができます。
+
+次のコマンドを入力して dapp アプリケーションを追加します。
+
+```cmd
+python3 manage.py startapp dapp
+```
+
+すると djangoLesson の同層に dapp　ディレクトリが追加されます。この中にDjangoアプリの雛形が入っています。
+
+では、作成した dapp を動かせれるよう設定します。
+
+dapp/views.py を次のように実装します。
+
+```python
+from django.shortcuts import render
+from django.http import HttpResponse
+
+def index(request):
+  return HttpResponse("dapp index")
+
+def foo(request):
+  return HttpResponse("dapp foo")
+```
+
+dapp/urls.py を作成して、次のように実装します。
+
+```python
+from django.urls import path
+
+from . import views
+
+urlpatterns = [
+    path('', views.index),
+    path('foo', views.foo),
+]
+```
+
+次に、djangoLesson から dapp を参照できるようにします。
+
+djangoLesson/urls.py に dapp を追加します。
+
+```python
+from django.contrib import admin
+from django.urls import path, include
+
+from . import views
+
+urlpatterns = [
+    path('helloWorld/', views.helloWorld),
+    path('dapp/', include('dapp.urls')), # 追加
+    path('hoge/', views.hoge),
+    path('fuga/', views.fuga),
+    path('admin/', admin.site.urls),
+]
+```
+http://127.0.0.1:8000/dapp/ や　http://127.0.0.1:8000/dapp/foo にアクセスできるようになります。
+
 
 #### 課題 1
 
