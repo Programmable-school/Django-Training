@@ -6,9 +6,9 @@
 - [環境構築](#環境構築)
 - [Hello Worldを表示](#トレーニング)
 - [ルーティング](#ルーティング)
-- リクエストメソッド
-- 静的ファイルの利用
-- htmlのレンダリング
+- [リクエストメソッド](#リクエストメソッド)
+- [静的ファイルの利用](#静的ファイルの利用)
+- [HTMLのレンダリング](HTMLのレンダリング)
 - DTLの利用
 - Bootstrapの利用
 - PostgreSQLの利用
@@ -234,7 +234,7 @@ djangoLesson/urls.py に dapp を追加します。
 
 ```python
 from django.contrib import admin
-from django.urls import path, include
+from django.urls import path, include # include追加
 
 from . import views
 
@@ -254,6 +254,171 @@ http://127.0.0.1:8000/dapp/ や　http://127.0.0.1:8000/dapp/foo にアクセス
 views.py に djangoDayo関数 実装して Django Dayo の文字列だけを表示するページを作成してください。
 
 ブラウザで http://127.0.0.1:8000/djangoDayo/ を開いて確認できること。
+
+
+### リクエストメソッド
+
+HTTPでは同じパスに対して異なるメソッドを提供することができます。リクエストメソッドと呼ばれ、データのCRUD（作成、取得、更新、削除）操作に応じて処理を扱えることができます。
+
+| メソッド | 用途 |
+|:---|:---|
+|GET | データの取得 |
+|POST | データの作成 |
+|PUT | データの更新 |
+|DELETE | データの削除 |
+
+requeset.method で送られてきたリクエストメソッドを判断できます。
+
+djangoLesson/views.py に次のコードを追加します。
+
+```python
+from django.views.decorators.csrf import csrf_exempt # 追加
+
+# 追加
+@csrf_exempt
+def crud(request):
+  if request.method == 'POST':
+    return HttpResponse('POST')
+  elif request.method == 'GET':
+    return HttpResponse('GET')
+  elif request.method == 'PUT':
+    return HttpResponse('PUT')
+  elif request.method == 'DELETE':
+    return HttpResponse('DELETE')
+  else:
+    return HttpResponse('Unknown')
+```
+
+djangoLesson/urls.py に crud のパスを追加します。
+
+```python
+urlpatterns = [
+    path('', views.index),
+    path('dapp/', include('dapp.urls')),
+    path('hoge/', views.hoge),
+    path('fuga/', views.fuga),
+    path('crud/', views.crud),  # 追加
+    path('admin/', admin.site.urls),
+]
+```
+
+リクエストメソッド毎に実装通りの結果が返ってくるか確認します。
+
+curl コマンドを用いて http://127.0.0.1:8000/crud/ へリクエストを送ります。
+
+```cmd
+$ curl http://127.0.0.1:8000/crud/
+GET
+
+$ curl -X GET http://127.0.0.1:8000/crud/
+GET
+
+$ curl -X POST http://127.0.0.1:8000/crud/
+POST
+
+$ curl -X DELETE http://127.0.0.1:8000/crud/
+DELETE
+
+$ curl -X PUT http://127.0.0.1:8000/crud/
+PUT
+
+$ curl -X A http://127.0.0.1:8000/crud/
+Unknown
+```
+
+### 静的ファイルの利用
+
+Webアプリケーションで画像・動画ファイル、JavaScript、CSS（スタイルシート）を配信できるようにしていきます。
+
+djangoLesson/setting.py で基本設定を見ていきます。
+
+django.contrib.staticfiles が設定されていることを確認してください。
+
+```python
+INSTALLED_APPS = [
+    'django.contrib.admin',
+    'django.contrib.auth',
+    'django.contrib.contenttypes',
+    'django.contrib.sessions',
+    'django.contrib.messages',
+    'django.contrib.staticfiles',
+]
+```
+
+STATIC_URL にディレクトリのパスが設定されていることを確認してください。
+
+```python
+STATIC_URL = '/static/'
+```
+
+配信するファイルを格納するディレクトリの絶対パスを設定します。
+
+djangoLesson/setting.py の最後に次のコードを追加してください。
+
+```python
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, 'static'),
+]
+```
+
+CSSを配信できるか確認します。
+
+static ディレクトリを作成して次のCSSファイルを作成してください。
+
+```cmd
+$ mkdir static | touch ./static/style.css
+$ ls
+dapp            db.sqlite3      djangoLesson    manage.py       static
+```
+
+static/style.css に次のコードを追加してください。
+
+```css
+h1 {
+  color: red;
+}
+```
+
+djangoLesson/views.py に次のコードを追加します。
+
+```python
+def page1(request):
+  return HttpResponse("""
+    <!DOCTYPE html>
+    <html>
+      <head>
+        <meta charset="utf-8" />
+        <link rel="stylesheet" href="/static/style.css" />
+      </head>
+      <body>
+        <h1>Page 1</h1>
+      </body>
+    </html>
+  """)
+```
+
+djangoLesson/urls.py に page1 のパスを追加します。
+
+```python
+urlpatterns = [
+    path('', views.index),
+    path('dapp/', include('dapp.urls')),
+    path('hoge/', views.hoge),
+    path('fuga/', views.fuga),
+    path('crud/', views.crud),
+    path('page1/', views.page1),  # 追加
+    path('admin/', admin.site.urls),
+]
+```
+
+http://127.0.0.1:8000/page1/ を開くと次の画面が表示されます。
+
+style.cssが反映されていることを確認できます。
+
+<img src="./images/lesson4_page1.png" width="50%">
+
+### HTMLのレンダリング
+
 
 
 ## 参考文献

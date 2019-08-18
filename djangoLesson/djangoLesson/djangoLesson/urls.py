@@ -20,8 +20,10 @@ from . import views
 
 urlpatterns = [
     path('', views.index),
-    path('dapp/', include('dapp.urls')), # 追加
+    path('dapp/', include('dapp.urls')),
     path('hoge/', views.hoge),
     path('fuga/', views.fuga),
+    path('crud/', views.crud),
+    path('page1/', views.page1),
     path('admin/', admin.site.urls),
 ]
