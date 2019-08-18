@@ -239,7 +239,7 @@ from django.urls import path, include
 from . import views
 
 urlpatterns = [
-    path('helloWorld/', views.helloWorld),
+    path('', views.index),
     path('dapp/', include('dapp.urls')), # 追加
     path('hoge/', views.hoge),
     path('fuga/', views.fuga),
@@ -258,9 +258,6 @@ views.py に djangoDayo関数 実装して Django Dayo の文字列だけを表�
 
 ## 参考文献
 
-・Python3 + Django2.0入門 - Pythonで作るWebアプリケーション開発入門 - その１<br>
-[https://www.amazon.co.jp/gp/product/B07GNJW2QN?ref_=dbs_pwh_calw_0&storeType=ebooks](https://www.amazon.co.jp/gp/product/B07GNJW2QN?ref_=dbs_pwh_calw_0&storeType=ebooks)
+[Python3 + Django2.0入門 - Pythonで作るWebアプリケーション開発入門 - その１](https://www.amazon.co.jp/gp/product/B07GNJW2QN)
 
-
-・Python3 + Django2.0入門 - Pythonで作るWebアプリケーション開発入門 - その２<br>
-[https://www.amazon.co.jp/gp/product/B07GNPK25J?ref_=dbs_pwh_calw_1&storeType=ebooks](https://www.amazon.co.jp/gp/product/B07GNPK25J?ref_=dbs_pwh_calw_1&storeType=ebooks)
+[Python3 + Django2.0入門 - Pythonで作るWebアプリケーション開発入門 - その２](https://www.amazon.co.jp/gp/product/B07GNPK25J)
