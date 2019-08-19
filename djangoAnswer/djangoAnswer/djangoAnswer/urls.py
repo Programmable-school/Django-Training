@@ -20,5 +20,6 @@ from . import views
 
 urlpatterns = [
     path('djangoDayo/', views.djangoDayo), # 課題1
+    path('koge/<value>', views.koge), # 課題2
     path('admin/', admin.site.urls),
 ]

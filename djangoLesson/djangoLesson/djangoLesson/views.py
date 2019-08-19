@@ -1,8 +1,11 @@
 from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
+from django.shortcuts import render
 
+# def index(request):
+#   return HttpResponse("Hello World")
 def index(request):
-  return HttpResponse("Hello World")
+  return render(request, 'index.html', {'title': 'Hello World'})
 
 def hoge(request):
   return HttpResponse("hoge")
@@ -36,3 +39,6 @@ def page1(request):
       </body>
     </html>
   """)
+
+def puge(request, value):
+  return render(request, 'puge.html', {'title': value})

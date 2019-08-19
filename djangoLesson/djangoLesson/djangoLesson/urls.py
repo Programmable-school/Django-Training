@@ -25,5 +25,6 @@ urlpatterns = [
     path('fuga/', views.fuga),
     path('crud/', views.crud),
     path('page1/', views.page1),
+    path('puge/<value>', views.puge),
     path('admin/', admin.site.urls),
 ]

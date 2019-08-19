@@ -9,6 +9,7 @@
 - [リクエストメソッド](#リクエストメソッド)
 - [静的ファイルの利用](#静的ファイルの利用)
 - [HTMLのレンダリング](HTMLのレンダリング)
+- [リクエストを受け取る](#リクエストを受け取る)
 - DTLの利用
 - Bootstrapの利用
 - PostgreSQLの利用
@@ -249,7 +250,7 @@ urlpatterns = [
 http://127.0.0.1:8000/dapp/ や　http://127.0.0.1:8000/dapp/foo にアクセスできるようになります。
 
 
-#### 課題 1
+#### 課題
 
 views.py に djangoDayo関数 実装して Django Dayo の文字列だけを表示するページを作成してください。
 
@@ -419,6 +420,114 @@ style.cssが反映されていることを確認できます。
 
 ### HTMLのレンダリング
 
+DjangoではDTL（Django template language）と呼ばれれるテンプレートエンジンを使ってHTMLを扱います。
+
+テンプレートはHTMLファイルに対してユーザーからの入力値などの要素を表示できるようにしたものです。
+
+実際にユーザーがサーバーへリクエストを行い、その結果を表示できるようにしたものです。
+
+djangoLesson/setting.py でテンプレートエンジンの設定を行います。DIRSに os.path.join(BASE_DIR, 'templates') を追加します。
+
+```python
+TEMPLATES = [
+    {
+        'BACKEND': 'django.template.backends.django.DjangoTemplates',
+        'DIRS': [
+          os.path.join(BASE_DIR, 'templates') # 追加
+        ],
+        'APP_DIRS': True,
+        'OPTIONS': {
+            'context_processors': [
+                'django.template.context_processors.debug',
+                'django.template.context_processors.request',
+                'django.contrib.auth.context_processors.auth',
+                'django.contrib.messages.context_processors.messages',
+            ],
+        },
+    },
+]
+```
+
+次に、templates ディレクトリを作成し、その中にindex.htmlを作成します。
+
+```cmd
+$ mkdir templates | touch ./templates/index.html
+$ ls
+dapp            db.sqlite3      djangoLesson    manage.py       static          templates
+```
+
+templates/index.html を次の通りに実装します。
+
+```html
+<!DOCTYPE HTML>
+<html>
+  <head>
+    <meta charset="utf-8" />
+  </head>
+  <body>
+    <h1>{{ title }}</h1>
+  </body>
+</html>
+```
+
+djangoLesson/views.py に次のコードを実装します。
+
+```python
+from django.http import HttpResponse
+from django.views.decorators.csrf import csrf_exempt
+from django.shortcuts import render # 追加
+
+# 変更
+def index(request):
+  return render(request, 'index.html', {'title': 'Hello World'})
+```
+
+http://127.0.0.1:8000/ にアクセスすると、views.py で指定した titleパラメータ が index.html に反映されていることを確認できます。
+
+<img src="./images/lesson5_helloWorld.png" width="50%">
+
+次に、ユーザーの入力値をページに反映してみます。
+
+index.html と同じ内容をコピーして、puge.htmlを作成します。
+
+djangoLesson/urls.py に path を追加します。
+
+```python
+[
+    .......
+    path('puge/<value>', views.puge), # 追加
+    path('admin/', admin.site.urls),
+]
+```
+djangoLesson/views.py に puge を追加します。
+
+```python
+def puge(request, value):
+  return render(request, 'puge.html', {'title': value})
+```
+
+http://127.0.0.1:8000/puge/develop にアクセスすると、次の画面が表示されます。
+
+<img src="./images/lesson5_puge.png" width="50%">
+
+#### 課題
+
+次のコードが書かれた koge.html を作成して、http://127.0.0.1:8000/koge/aiueo にアクセスすると、aiueoが表示できるようにしてください。
+
+```html
+<!DOCTYPE HTML>
+<html>
+  <head>
+    <meta charset="utf-8" />
+  </head>
+  <body>
+    <p>{{ description }}</p>
+  </body>
+</html>
+```
+
+
+### リクエストを受け取る
 
 
 ## 参考文献
