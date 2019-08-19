@@ -529,9 +529,256 @@ http://127.0.0.1:8000/puge/develop にアクセスすると、次の画面が表
 
 ### リクエストを受け取る
 
+#### GETリクエスト
+
+ユーザーから送信されたリクエストを受け取る方法を確認します。
+
+request からリクエストメソッドとパラメータを取得することができます。
+
+request.GET.get('q') を用いて、リクエストパラメータを受け取るページを作成します。
+
+djangoLesson/views.py に search を追加します。
+
+```python
+def search(request):
+  q = request.GET.get('q')
+  return HttpResponse(q)
+```
+
+djangoLesson/urls.py に path を追加します。
+
+```python
+urlpatterns = [
+    path('', views.index),
+    .....
+    path('search', views.search), # 追加
+    path('admin/', admin.site.urls),
+]
+```
+
+http://127.0.0.1:8000/search?q=hoge にアクセスすると画面上にリクエストパラメータで指定した文字が表示されます。
+
+
+#### POSTリクエスト
+
+POSTリクエストでユーザーから送信されたフォームを受け取る方法を確認します。
+
+まずは、フォームを作成します。templates/post_form.html を作成して、次の通りに実装します。
+
+```html
+<!DOCTYPE HTML>
+<html>
+  <head>
+    <meta charset="utf-8" />
+  </head>
+  <body>
+    <h1>フォームに入力してください</h1>
+    <form method="POST" action="/postSend">
+      {% csrf_token %}
+      <div>
+        <input placeholder="名前" name="name" type="text"/>
+      </div>
+      <div>
+        <input placeholder="年齢" name="age" type="number"/>
+      </div>
+      <input value="送信" type="submit" />
+    </form>
+  </body>
+</html>
+```
+
+送られてきたフォームの入力データを表示するページを作成します。templates/post_display.html を作成して、次の通りに実装します。
+
+```html
+<!DOCTYPE HTML>
+<html>
+  <head>
+    <meta charset="utf-8" />
+  </head>
+  <body>
+    <h1>確認</h1>
+    <h2>名前</h2>
+    <p>{{ name }}</p>
+    <h2>年齢</h2>
+    <p>{{ age }}</p>
+  </body>
+</html>
+```
+
+不正なリクエストが送られてきた時に表示するページを作成します。 templates/error.html を作成して、次の通りに実装します。
+
+```html
+<!DOCTYPE HTML>
+<html>
+  <head>
+    <meta charset="utf-8" />
+  </head>
+  <body>
+    <h1>不正なリクエストです。</h1>
+  </body>
+</html>
+```
+
+djangoLesson/views.py に post_form と postSendを追加します。
+
+postSendでは送られてきたデータを確認して、post_display.html へデータを渡してレンダリングします。不正なデータであれば error.html をレンダリングします。
+
+```python
+def post_form(requset):
+  return render(requset, 'post_form.html')
+
+def postSend(request):
+  if request.POST['name'] and request.POST['age']:
+    return render(request, 'post_display.html', {'name': request.POST['name'], 'age': request.POST['age']})
+  else:
+    return render(request, 'error.html')
+```
+
+djangoLesson/urls.py に path を追加します。
+
+```python
+urlpatterns = [
+    path('', views.index),
+    .....
+    path('post_form', views.post_form), # 追加
+    path('postSend', views.postSend),   # 追加
+    path('admin/', admin.site.urls),
+]
+```
+
+http://127.0.0.1:8000/post_form にアクセスしてフォームに入力後、送信ボタンを押すと 確認画面に遷移されます。
+
+<img src="./images/lesson6_post_form.png" width="30%">
+
+<br>
+<img src="./images/lesson6_post_display.png" width="30%">
+
+また、フォームに何も入力していない状態で送信ボタンを押すと、不正なリクエストと判断されてエラー画面が表示されます。
+
+<img src="./images/lesson6_error.png" width="30%">
+
+#### バイナリデータを扱う
+
+画像などのバイナリデータをアップロードして取得する方法を確認します。
+
+まずは、フォームを作成します。templates/post_form_image.html を作成して、次の通りに実装します。
+
+```html
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8"/>
+  </head>
+  <body>
+    <h1>画像をアップロード</h1>
+    <form method="POST" action="/imageUpload" enctype="multipart/form-data">
+      {% csrf_token %}
+      <input name="image" type="file"/>
+      <input value="送信" type="submit"/>
+    </form>
+  </body>
+</html>
+```
+
+次に、アップロードされたファイルを閲覧するためのページを作成します。templates/post_display_image.html を作成して、次の通りに実装します。
+
+```html
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8"/>
+  </head>
+  <body>
+    <h1>アップロードされた画像</h1>
+    <img src="/{{filepath}}" style="max-width: 320px"/>
+  </body>
+</html>
+```
+
+djangoLesson/views.py に post_form_image と imageUpload を追加します。
+
+imageUpload にはリクエストで送られてきた画像データをコピーして static ディレクトリの中に保存します。
+
+保存した画像データのパスを post_display_image.html へ渡してレンダリングします。
+
+```python
+from django.http import HttpResponse, HttpResponseRedirect # 追加
+from django.views.decorators.csrf import csrf_exempt
+from django.shortcuts import render
+
+# 追加
+from hashlib import md5 
+from random import random
+
+....
+
+# 追加
+def post_form_image(request):
+  return render(request, 'post_form_image.html')
+
+def imageUpload(request):
+  if request.method == 'POST' and request.FILES['image'] and (request.FILES['image'].content_type == "image/png" or request.FILES['image'].content_type == "image/jpeg"):
+    # 画像の拡張子
+    extension = ".jpg"
+    if request.FILES['image'].content_type == "image/png":
+      extension = ".png"
+
+    # ファイル名
+    filename = md5(request.FILES['image'].name.encode('utf-8')).hexdigest() + extension
+
+    # ファイルパス
+    filepath = 'static/' + filename
+
+    # 画像データを image へ書き写す
+    image = open(filepath, 'wb')
+    for chunk in request.FILES['image'].chunks():
+      image.write(chunk)
+    return render(request, 'post_display_image.html', {'filepath': filepath})
+  else:
+    return HttpResponseRedirect('/post_form_image')
+```
+
+djangoLesson/urls.py に path を追加します。
+
+```python
+urlpatterns = [
+    path('', views.index),
+    .....
+    path('post_form_image', views.post_form_image), # 追加
+    path('imageUpload', views.imageUpload), # 追加
+    path('admin/', admin.site.urls),
+]
+```
+
+http://127.0.0.1:8000/post_form_image にアクセスして画像ファイルを送信すると確認画面へ遷移できます。
+
+
+<img src="./images/lesson6_post_form_image.png" width="30%">
+
+<br>
+<img src="./images/lesson6_post_display_image.png" width="30%">
+
+
+static ディレクトリには 英数字の名前に書き換わった画像ファイルが保存されているのを確認できます。
+
+
+#### 課題
+
+次のプロフィール内容を送信できるフォームを作成し、その内容をを確認できる画面を作成してください。
+
+- 名前
+- 年齢
+- 自己紹介
+
+
 
 ## 参考文献
 
 [Python3 + Django2.0入門 - Pythonで作るWebアプリケーション開発入門 - その１](https://www.amazon.co.jp/gp/product/B07GNJW2QN)
 
 [Python3 + Django2.0入門 - Pythonで作るWebアプリケーション開発入門 - その２](https://www.amazon.co.jp/gp/product/B07GNPK25J)
+
+
+
+
+

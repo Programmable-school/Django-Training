@@ -1,6 +1,8 @@
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseRedirect
 from django.views.decorators.csrf import csrf_exempt
 from django.shortcuts import render
+from hashlib import md5
+from random import random
 
 # def index(request):
 #   return HttpResponse("Hello World")
@@ -42,3 +44,40 @@ def page1(request):
 
 def puge(request, value):
   return render(request, 'puge.html', {'title': value})
+
+def search(request):
+  q = request.GET.get('q')
+  return HttpResponse(q)
+
+def post_form(requset):
+  return render(requset, 'post_form.html')
+
+def postSend(request):
+  if request.POST['name'] and request.POST['age']:
+    return render(request, 'post_display.html', {'name': request.POST['name'], 'age': request.POST['age']})
+  else:
+    return render(request, 'error.html')
+
+def post_form_image(request):
+  return render(request, 'post_form_image.html')
+
+def imageUpload(request):
+  if request.method == 'POST' and request.FILES['image'] and (request.FILES['image'].content_type == "image/png" or request.FILES['image'].content_type == "image/jpeg"):
+    # 画像の拡張子
+    extension = ".jpg"
+    if request.FILES['image'].content_type == "image/png":
+      extension = ".png"
+
+    # ファイル名
+    filename = md5(request.FILES['image'].name.encode('utf-8')).hexdigest() + extension
+
+    # ファイルパス
+    filepath = 'static/' + filename
+
+    # 画像データを image へ書き写す
+    image = open(filepath, 'wb')
+    for chunk in request.FILES['image'].chunks():
+      image.write(chunk)
+    return render(request, 'post_display_image.html', {'filepath': filepath})
+  else:
+    return HttpResponseRedirect('/post_form_image')

@@ -26,5 +26,10 @@ urlpatterns = [
     path('crud/', views.crud),
     path('page1/', views.page1),
     path('puge/<value>', views.puge),
+    path('search', views.search),
+    path('post_form', views.post_form),
+    path('postSend', views.postSend),
+    path('post_form_image', views.post_form_image),
+    path('imageUpload', views.imageUpload),
     path('admin/', admin.site.urls),
 ]
