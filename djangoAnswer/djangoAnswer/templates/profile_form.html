@@ -4,5 +4,19 @@
     <meta charset="utf-8"/>
   </head>
   <body>
+    <h1>フォームに入力してください</h1>
+    <form method="POST" action="/postProfile">
+      {% csrf_token %}
+      <div>
+        <input placeholder="名前" name="name" type="text"/>
+      </div>
+      <div>
+        <input placeholder="年齢" name="age" type="number"/>
+      </div>
+      <div>
+        <textarea placeholder="自己紹介" name="profile" type="text"></textarea>
+      </div>
+      <input value="送信" type="submit" />
+    </form>
   </body>
 </html>

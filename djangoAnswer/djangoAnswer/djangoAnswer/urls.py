@@ -19,7 +19,10 @@ from django.urls import path
 from . import views
 
 urlpatterns = [
-    path('djangoDayo/', views.djangoDayo), # 課題1
-    path('koge/<value>', views.koge), # 課題2
+    path('', views.index),
+    path('djangoDayo/', views.djangoDayo), # kadai1
+    path('koge/<value>', views.koge), # kadai2
+    path('profile_form', views.profile_form), # kadai3
+    path('postProfile', views.postProfile), # kadai3
     path('admin/', admin.site.urls),
 ]
