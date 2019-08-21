@@ -87,3 +87,15 @@ def dic(request):
 
 def escape(request):
   return render(request, 'escape.html', {'unescaped': '<script>alert(\'hoge\')</script>'})
+
+def sample_if(request):
+  return render(request, 'sample_if.html', {'random': random()})
+
+def sample_for(request):
+  return render(request, 'sample_for.html', {'list': ['Hoge', 'Fuga', 'Foo']})
+
+def sample_comment(request):
+  return render(request, 'sample_comment.html')
+
+def sample_index(request):
+  return render(request, 'sample_index.html', {'title': 'タイトル', 'message': 'メッセージ'})

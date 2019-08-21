@@ -1,0 +1,16 @@
+{% extends "sample_theme.html" %}
+{% block title %}Hello World{% endblock %}
+{% block head %}
+  {{ block.super }}
+  <style type="text/css">
+    body {
+      background-color: #fffacd;
+    }
+  </style>
+{% endblock %}
+{% block content %}
+    <h1>{{ title }}</h1>
+    <p>
+      {{ message }}
+    </p>
+{% endblock %}

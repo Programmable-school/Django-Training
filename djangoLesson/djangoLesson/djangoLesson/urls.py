@@ -33,5 +33,9 @@ urlpatterns = [
     path('imageUpload', views.imageUpload),
     path('dic', views.dic),
     path('escape', views.escape),
+    path('sample_if', views.sample_if),
+    path('sample_for', views.sample_for),
+    path('sample_comment', views.sample_comment),
+    path('sample_index', views.sample_index),
     path('admin/', admin.site.urls),
 ]

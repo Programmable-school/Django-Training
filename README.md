@@ -706,9 +706,7 @@ from django.http import HttpResponse, HttpResponseRedirect # 追加
 from django.views.decorators.csrf import csrf_exempt
 from django.shortcuts import render
 
-# 追加
-from hashlib import md5 
-from random import random
+from hashlib import md5 # 追加
 
 ....
 
@@ -759,7 +757,7 @@ http://127.0.0.1:8000/post_form_image にアクセスして画像ファイルを
 <img src="./images/lesson6_post_display_image.png" width="30%">
 
 
-static ディレクトリには 英数字の名前に書き換わった画像ファイルが保存されているのを確認できます。
+static ディレクトリには、英数字の名前に書き換わった画像ファイルが保存されます。
 
 
 #### 課題
@@ -864,12 +862,218 @@ http://127.0.0.1:8000/escape にアクセスすると、アラートが表示さ
 
 #### 条件分岐
 
+if文を使用することができます。構文はPythonと同じです。
+
+random の値によって表示する内容を変更するページを作成します。
+
+templates/sample_if.html
+
+```html
+<!DOCTYPE HTML>
+<html>
+  <head>
+    <meta charset="utf-8" />
+  </head>
+  <body>
+    {% if random > 0.6 %}
+      <h1>Hoge</h1>
+    {% elif random > 0.3 %}
+      <h1>Foo</h1>
+    {% else %}
+      <h1>Fuga</h1>
+    {% endif %}
+  </body>
+</html>
+```
+
+djangoLesson/views.py
+
+```python
+from random import random # 追加
+
+...
+
+def sample_if(request):
+  return render(request, 'sample_if.html', {'random': random()})
+```
+
+
+djangoLesson/urls.py
+
+```python
+urlpatterns = [
+    path('', views.index),
+    ...
+    path('sample_if', views.sample_if), # 追加
+    path('admin/', admin.site.urls),
+]
+```
+
+http://127.0.0.1:8000/sample_if にアクセスするたびに、ランダムで Hoge, Foo, Fugeのどちからが表示されます。
+
 #### 繰り返し（ループ）
+
+for文を使用することができます。構文はPythonと同じです。
+
+templates/sample_for.html
+
+```html
+<!DOCTYPE HTML>
+<html>
+  <head>
+    <meta charset="utf-8" />
+  </head>
+  <body>
+    <ul>
+    {% for item in list %}
+      <li>{{ item }}</li>
+    {% endfor %}
+    </ul>
+  </body>
+</html>
+```
+
+djangoLesson/views.py
+
+```python
+def sample_for(request):
+  return render(request, 'sample_for.html', {'list': ['Hoge', 'Fuga', 'Foo']})
+```
+
+djangoLesson/urls.py
+
+```python
+urlpatterns = [
+    path('', views.index),
+    ...
+    path('sample_for', views.sample_for), # 追加
+    path('admin/', admin.site.urls),
+]
+```
+
+http://127.0.0.1:8000/sample_for にアクセスすると、配列で渡したデータが列挙されます。
 
 #### コメント
 
+コメントは **{# #}** を使用します。DTLでのコメントはHTMLの出力時に自動的に取り除かるため、ページにアクセスしたユーザーに見られることはありません。
+
+templates/sample_comment.html
+
+```html
+<!DOCTYPE HTML>
+<html>
+  <head>
+    <meta charset="utf-8" />
+  </head>
+  <body>
+    {# My comment. #}
+    <h1>Hoge</h1>
+  </body>
+</html>
+```
+
+djangoLesson/views.py
+
+```python
+def sample_comment(request):
+  return render(request, 'sample_comment.html')
+```
+
+djangoLesson/urls.py
+
+```python
+urlpatterns = [
+    path('', views.index),
+    ...
+    path('sample_comment', views.sample_comment), # 追加
+    path('admin/', admin.site.urls),
+]
+```
+
+http://127.0.0.1:8000/sample_comment にアクセスして表示されているHTMLを確認すると、コメント部分が無いことを確認できます。
+
+
+<img src="./images/lesson7_comment.png" width="50%">
+
+
 #### テンプレートの継承
 
+テンプレートを継承することで、共通のデザインを使い回すことができます。
+
+子テンプレートからコンテンツを追加できるようにするためには {% block CONTENTSNAME %} を用います。継承先のテンプレートにあらかじめ初期値を入れておくと使いやすくなります。
+
+共通のデザインとなるテンプレートを作成します。
+
+templates/sample_theme.html
+
+```html
+<!doctype html>
+<html>
+  <head>
+    {% block head %}
+    <link rel="stylesheet" href="/static/style.css" />
+    <title>{% block title %}{% endblock %}</title>
+    {% endblock %}
+  </head>
+  <body>
+    <div id="content">
+      {% block content %}
+      {% endblock %}
+    </div>
+    <div id="footer">
+      {% block footer %}
+        Copyright 2019.
+      {% endblock%}
+    </div>
+  </body>
+</html>
+```
+
+それを子テンプレートから呼び出します。継承する際は {% extends "FILENAME" %} を用いて継承したいページを指定します。
+
+templates/sample_index.html
+
+```html
+{% extends "sample_theme.html" %}
+{% block title %}Hello World{% endblock %}
+{% block head %}
+  {{ block.super }}
+  <style type="text/css">
+    body {
+      background-color: #fffacd;
+    }
+  </style>
+{% endblock %}
+{% block content %}
+    <h1>{{ title }}</h1>
+    <p>
+      {{ message }}
+    </p>
+{% endblock %}
+```
+
+djangoLesson/views.py
+
+```python
+def sample_index(request):
+  return render(request, 'sample_index.html')
+```
+
+djangoLesson/urls.py
+
+```python
+urlpatterns = [
+    path('', views.index),
+    ...
+    path('sample_index', views.sample_index), # 追加
+    path('admin/', admin.site.urls),
+]
+```
+
+http://127.0.0.1:8000/sample_index にアクセスすると次の画面が表示されます。
+
+
+<img src="./images/lesson7_index.png" width="30%">
 
 ## 参考文献
 
