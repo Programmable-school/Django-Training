@@ -81,3 +81,9 @@ def imageUpload(request):
     return render(request, 'post_display_image.html', {'filepath': filepath})
   else:
     return HttpResponseRedirect('/post_form_image')
+
+def dic(request):
+  return render(request, 'dic.html', {'obj': {'title': 'hoge'}})
+
+def escape(request):
+  return render(request, 'escape.html', {'unescaped': '<script>alert(\'hoge\')</script>'})

@@ -31,5 +31,7 @@ urlpatterns = [
     path('postSend', views.postSend),
     path('post_form_image', views.post_form_image),
     path('imageUpload', views.imageUpload),
+    path('dic', views.dic),
+    path('escape', views.escape),
     path('admin/', admin.site.urls),
 ]

@@ -773,19 +773,103 @@ static ディレクトリには 英数字の名前に書き換わった画像フ
 
 ### DTLの利用
 
-#### 辞書型データのアクセス
+#### 辞書型データ
 
 ネストされた辞書型データにアクセスできます。
 
+djangoLesson/views.py
 
-```python:views.py
+```python
 def dic(request):
-  return render(request, 'dic.html', {'obj': {'title': 'hoge'}})
+  return render(request, 'dic.html', {'obj': {'title': 'hoge'}}) # 辞書型
 ```
 
+templates/dic.html
+
+```html
+<!DOCTYPE HTML>
+<html>
+  <head>
+    <meta charset="utf-8" />
+  </head>
+  <body>
+    <!-- 辞書型で渡されたデータを表示 -->
+    <h1>{{ obj.title }}</h1>
+  </body>
+</html>
+```
+
+djangoLesson/urls.py
+
+```python
+urlpatterns = [
+    path('', views.index),
+    ...
+    path('dic', views.dic), # 追加
+    path('admin/', admin.site.urls),
+]
+```
+
+#### エスケープ
+
+XSS脆弱性対策のため、DTLではディフォルトではエスケープが有効かされています。
+
+これを無効化することも可能です。
+
+```
+{% autoescape off %}
+ {{ hoge }}
+{% endautoescape %}
+```
+
+templates/escape.html
+
+```html
+<!DOCTYPE HTML>
+<html>
+  <head>
+    <meta charset="utf-8" />
+  </head>
+  <body>
+    {% autoescape off %}
+      <p>{{ unescaped }}</p>
+    {% endautoescape %}
+  </body>
+</html>
+```
+
+djangoLesson/views.py
+
+```python
+def escape(request):
+  return render(request, 'escape.html', {'unescaped': '<script>alert(\'hoge\')</script>'})
+```
+
+djangoLesson/urls.py
+
+```python
+urlpatterns = [
+    path('', views.index),
+    ...
+    path('escape', views.escape), # 追加
+    path('admin/', admin.site.urls),
+]
+```
+
+http://127.0.0.1:8000/escape にアクセスすると、アラートが表示されます。
 
 
-また辞書型データを
+<img src="./images/lesson7_escape.png" width="30%">
+
+
+#### 条件分岐
+
+#### 繰り返し（ループ）
+
+#### コメント
+
+#### テンプレートの継承
+
 
 ## 参考文献
 
