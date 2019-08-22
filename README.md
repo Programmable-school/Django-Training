@@ -857,7 +857,7 @@ urlpatterns = [
 http://127.0.0.1:8000/escape にアクセスすると、アラートが表示されます。
 
 
-<img src="./images/lesson7_escape.png" width="30%">
+<img src="./images/lesson7_escape.png" width="50%">
 
 
 #### 条件分岐
@@ -1073,7 +1073,7 @@ urlpatterns = [
 http://127.0.0.1:8000/sample_index にアクセスすると次の画面が表示されます。
 
 
-<img src="./images/lesson7_index.png" width="30%">
+<img src="./images/lesson7_index.png" width="50%">
 
 ## 参考文献
 
