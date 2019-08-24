@@ -99,3 +99,6 @@ def sample_comment(request):
 
 def sample_index(request):
   return render(request, 'sample_index.html', {'title': 'タイトル', 'message': 'メッセージ'})
+
+def design_index(request):
+  return render(request, 'design_index.html')

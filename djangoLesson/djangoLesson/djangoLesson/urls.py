@@ -37,5 +37,6 @@ urlpatterns = [
     path('sample_for', views.sample_for),
     path('sample_comment', views.sample_comment),
     path('sample_index', views.sample_index),
+    path('design_index', views.design_index),
     path('admin/', admin.site.urls),
 ]
