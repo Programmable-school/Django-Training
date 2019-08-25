@@ -1,0 +1,32 @@
+{% extends "design_theme.html" %}
+{% block title %}Bootstrap Lesson{% endblock %}
+{% block head %}
+  {{ block.super }}
+  <style type="text/css">
+    body {
+      background-color: #fff;
+    }
+    .avatar {
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+    }
+  </style>
+{% endblock %}
+{% block nav_current_profile %}
+  <li class="nav-item active">
+    <a class="nav-link" href="/design_profile">プロフィール</a>
+  </li>
+{% endblock %}
+{% block content %}
+  <h1>プロフィール</h1>
+  <div class="card border-secondary mb-3" style="max-width: 18rem;">
+    <div class="card-body text-secondary">
+      <img src="/static/my.jpg"  class="avatar" />
+      <div style="margin: 10px;">
+        <h5 class="card-title">shohei</h5>
+        <p class="card-text">iOS/Android Developer. I' m from tokushima. My hobby is DanceDanceRevolution.</p>
+      </div>
+    </div>
+  </div>
+{% endblock %}

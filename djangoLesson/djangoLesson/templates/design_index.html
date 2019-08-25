@@ -1,4 +1,43 @@
-<!doctype html>
+{% extends "design_theme.html" %}
+{% block title %}Bootstrap Lesson{% endblock %}
+{% block head %}
+  {{ block.super }}
+  <style type="text/css">
+    body {
+      background-color: #fff;
+    }
+    .content__diary-edit {
+      text-align: right;
+      font-size: 0.9em; 
+    }
+  </style>
+{% endblock %}
+<!-- ナビゲーションバーのリンク選択フォーカス -->
+{% block nav_current_home %}
+  <li class="nav-item active">
+    <a class="nav-link" href="/design_index">ホーム</a>
+  </li>
+{% endblock %}
+{% block content %}
+  <h1>日記一覧</h1>
+  <ul class="list-group col-md-8">
+    {% for diary in diaries %}
+    <li class="list-group-item">
+      <div class="d-flex w-100 justify-content-between">
+        <h5 class="mb-1">{{ diary.title }}</h5>
+        <small style="color: gray;">{{ diary.date_published | date:"Y/m/d P" }}</small>
+      </div>
+      <!-- 改行コードを反映させるために linebreaksbr 利用する -->
+      <p class="mb-1" style="margin: 8px;">{{ diary.content | linebreaksbr }}</p>
+      <div class="content__diary-edit">
+        編集
+      </div>
+    </li>
+    {% endfor %}
+  </ul>
+{% endblock %}
+
+{% comment %} <!doctype html>
 <html lang="ja">
   <head>
     <!-- 追加 -->
@@ -39,4 +78,4 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
   </body>
-</html>
+</html> {% endcomment %}

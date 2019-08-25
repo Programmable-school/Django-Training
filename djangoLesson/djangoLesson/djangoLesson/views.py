@@ -1,8 +1,10 @@
 from django.http import HttpResponse, HttpResponseRedirect
 from django.views.decorators.csrf import csrf_exempt
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from hashlib import md5
 from random import random
+
+from .models import Diary
 
 # def index(request):
 #   return HttpResponse("Hello World")
@@ -100,5 +102,30 @@ def sample_comment(request):
 def sample_index(request):
   return render(request, 'sample_index.html', {'title': 'タイトル', 'message': 'メッセージ'})
 
+# def design_index(request):
+#   return render(request, 'design_index.html')
+
 def design_index(request):
-  return render(request, 'design_index.html')
+  try:
+    # 全ての日記を日付の新しい順に取得（サンプルコードのため、ページ指定は行わずに全てを取得する）
+    diaries = Diary.objects.values().order_by('-date_published')
+    return render(request, 'design_index.html', {'diaries': diaries})
+  except:
+    return render(request, 'design_index.html', {'diaries': []})
+
+def design_profile(request):
+  return render(request, 'design_profile.html')
+
+def design_diary_form(request):
+  return render(request, 'design_diary_form.html')
+
+def design_diary_post(request):
+  if request.method == 'POST' and request.POST['title'] and request.POST['content']:
+    diary = Diary.objects.create(
+      title=request.POST['title'],
+      content=request.POST['content'],
+    )
+    diary.save()
+    return redirect(to="/design_index")
+  else:
+    return render(request, 'design_diary_form.html')

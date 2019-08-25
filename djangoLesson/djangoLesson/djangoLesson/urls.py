@@ -38,5 +38,8 @@ urlpatterns = [
     path('sample_comment', views.sample_comment),
     path('sample_index', views.sample_index),
     path('design_index', views.design_index),
+    path('design_profile', views.design_profile),
+    path('design_diary_form', views.design_diary_form),
+    path('design_diary_post', views.design_diary_post),
     path('admin/', admin.site.urls),
 ]

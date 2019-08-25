@@ -1,0 +1,32 @@
+{% extends "design_theme.html" %}
+{% block title %}Bootstrap Lesson{% endblock %}
+{% block head %}
+  {{ block.super }}
+  <style type="text/css">
+    body {
+      background-color: #fff;
+    }
+  </style>
+{% endblock %}
+{% block nav_current_diary_post %}
+  <li class="nav-item active">
+    <a class="nav-link" href="/design_diary_form">日記投稿</a>
+  </li>
+{% endblock %}
+{% block content %}
+  <h1>日記投稿</h1>
+  <div style="max-width: 30rem;">
+    <form action="/design_diary_post" method="POST">
+      {% csrf_token %}
+      <div class="form-group">
+        <label for="form__diary-title">タイトル</label>
+        <input type="text" class="form-control" id="form__diary-title" name="title" placeholder="タイトル">
+      </div>
+      <div class="form-group">
+        <label for="form__diary-content">内容</label>
+        <textarea class="form-control" id="form__diary-content" name="content" rows="10"></textarea>
+      </div>
+      <input class="btn btn-primary" type="submit" value="投稿">
+    </form>
+  </div>
+{% endblock %}

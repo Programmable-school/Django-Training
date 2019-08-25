@@ -12,7 +12,7 @@
 - [リクエストを受け取る](#リクエストを受け取る)
 - [DTLの利用](#DTLの利用)
 - [Bootstrapの利用](Bootstrapの利用)
-- PostgreSQLの利用
+- [PostgreSQLの利用](PostgreSQLの利用)
 
 
 ## 開発環境
@@ -1082,7 +1082,7 @@ Bootstrapはデザインテンプレートの1つです。リッチなボタン�
 
 [https://getbootstrap.com/](https://getbootstrap.com/)
 
-[https://getbootstrap.com/docs/4.3/components/alerts/](https://getbootstrap.com/docs/4.3/components/alerts/)
+[https://getbootstrap.com/docs/4.3/components/](https://getbootstrap.com/docs/4.3/components/)
 
 #### 導入
 
@@ -1145,21 +1145,487 @@ http://127.0.0.1:8000/design_index にアクセスすると次の画面が表示
 
 #### ナビゲーションバー
 
+ページのヘッダーにナビゲーションバーを設置します。
+
+HTMLの **nav** 要素を使用してclassにBootstrapのタグを埋め込みます。**nav** 要素のclassに、Bootstrapの **navbar** を使用します。
+
+[https://getbootstrap.com/docs/4.3/components/navbar/](https://getbootstrap.com/docs/4.3/components/navbar/)
+
+
+```html
+<nav class="navbar navbar-dark bg-dark navbar-expand-lg">
+  <a class="navbar-brand" href="/">私の日記</a>
+</nav>
+```
+
+**navbar-dark** はリンクに当たる要素の色が変わります。この場合「私の日記」の色が白色に変わります。 **bg-dark navbar**範囲の背景がdarkになります。**navbar-expand-lg** はレスポンシブ対応する際に必要です。**navbar-brand** は適用した要素のスタイルがブランド仕様（fontのsizeやpaddingなど）に変わります。
+
+templates/design_index.html
+
+```html
+<!doctype html>
+<html lang="ja">
+  ... 
+  <body>
+    <!-- 追加 -->
+    <nav class="navbar navbar-dark bg-dark navbar-expand-lg">
+      <a class="navbar-brand" href="/">私の日記</a>
+    </nav>
+    <!--------->
+    <div style="margin: 16px;">
+      <h1>Hello world!</h1>
+      <button type="button" class="btn btn-primary">Bootstrap button</button>
+    </div>
+    ...
+  </body>
+</html>
+```
+
+<img src="./images/lesson8_design_index_nav_1.png" width="40%">
+
+
+次にヘッダーの中に「ホーム」「プロフィール」「日記投稿」のリンクを追加します。次のコードを実装します。
+
+```html
+<!doctype html>
+<html lang="ja">
+  ... 
+  <body>
+    <nav class="navbar navbar-dark bg-dark navbar-expand-lg">
+      <a class="navbar-brand" href="/">私の日記</a>
+      <!-- 追加 -->
+      <button class="navbar-toggler" type="button" data-toggle="collapse" 
+        data-target="#navbarText" aria-controls="navbarText" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon" />
+      </button>
+      <div class="collapse navbar-collapse" id="navbarText">
+        <ul class="navbar-nav mr-auto">
+          <li class="nav-item active">
+            <a class="nav-link" href="/design_index">ホーム<span class="sr-only">(current)</span></a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/design_profile">プロフィール</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/design_diary_form">日記投稿</a>
+          </li>
+        </ul>
+      </div>
+      <!--------->
+    </nav>
+    <div style="margin: 16px;">
+      <h1>Hello world!</h1>
+      <button type="button" class="btn btn-primary">Bootstrap button</button>
+    </div>
+    ...
+  </body>
+</html>
+```
+
+レスポンシブ対応したナビゲーションバーです。通常は横並びにリンクが表示されますが、ブラウザの幅を小さくするとボタンが表示され押下するとメニュー覧として表示されます。
+
+
+<img src="./images/lesson8_design_index_nav_2.png" width="40%">
+<br>
+
+<img src="./images/lesson8_design_index_nav_3.png" width="40%">
+
+
+#### ヘッダー要素を継承する
+
+他のページでもヘッダー要素使えるよう、ヘッダー要素のテンプレートを作成します。他のページで継承して流用できるようにします。
+
+templates/design_theme.html を実装します。
+
+```html
+<!doctype html>
+<html lang="ja">
+  <head>
+    {% block head %}
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+      <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+      <title>{% block title %}{% endblock %}</title>
+    {% endblock %}
+  </head>
+  <body>
+    {% block nav %}
+      <nav class="navbar navbar-dark bg-dark navbar-expand-lg">
+        <a class="navbar-brand" href="/">私の日記</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" 
+          data-target="#navbarText" aria-controls="navbarText" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon" />
+        </button>
+        <div class="collapse navbar-collapse" id="navbarText">
+          <ul class="navbar-nav mr-auto">
+            {% block nav_current_home%}
+              <li class="nav-item">
+                <a class="nav-link" href="/design_index">ホーム</a>
+              </li>
+            {% endblock %}
+            {% block nav_current_profile %}
+              <li class="nav-item">
+                <a class="nav-link" href="/design_profile">プロフィール</a>
+              </li>
+            {% endblock %}
+            {% block nav_current_diary_post %}
+              <li class="nav-item">
+                <a class="nav-link" href="/design_diary_form">日記投稿</a>
+              </li>
+            {% endblock %}
+          </ul>
+        </div>
+      </nav>
+    {% endblock %}
+    <div style="margin: 16px;">
+      {% block content %}
+      {% endblock %}
+    </div>
+    <!-- 追加 Bootstrap JS  -->
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+  </body>
+</html>
+```
+
+templates/design_index.html を書き直します。
+
+```html
+{% extends "design_theme.html" %}
+{% block title %}Bootstrap Lesson{% endblock %}
+{% block head %}
+  {{ block.super }}
+  <style type="text/css">
+    body {
+      background-color: #fff;
+    }
+  </style>
+{% endblock %}
+{% block nav_current_home %}
+  <li class="nav-item active">
+    <a class="nav-link" href="/design_index">ホーム</a>
+  </li>
+{% endblock %}
+{% block content %}
+  <h1>Hello World</h1>
+  <button type="button" class="btn btn-primary">Bootstrap button</button>
+{% endblock %}
+```
+
 
 #### プロフィールページ
 
+プロフィールページを作成します。Bootstrapの **Card**  を利用します。
+
+[https://getbootstrap.com/docs/4.3/components/card/](https://getbootstrap.com/docs/4.3/components/card/)
+
+あらかじめ、プロフィールに載せたい画像を **my.jpg** のファイル名にして **static** ディレクトリに保存してください。
+
+プロフィール画面を実装します。
+
+templates/design_profile.html
+
+```html
+{% extends "design_theme.html" %}
+{% block title %}Bootstrap Lesson{% endblock %}
+{% block head %}
+  {{ block.super }}
+  <style type="text/css">
+    body {
+      background-color: #fff;
+    }
+    /* avatarのデザインへ設定 */
+    .avatar {
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+    }
+  </style>
+{% endblock %}
+{% block nav_current_profile %}
+  <li class="nav-item active">
+    <a class="nav-link" href="/design_profile">プロフィール</a>
+  </li>
+{% endblock %}
+{% block content %}
+  <h1>プロフィール</h1>
+  <div class="card border-secondary mb-3" style="max-width: 18rem;">
+    <div class="card-body text-secondary">
+      <img src="/static/my.jpg"  class="avatar" />
+      <div style="margin: 10px;">
+        <!-- ここはご自身のプロフィールで -->
+        <h5 class="card-title">shohei</h5>
+        <p class="card-text">iOS/Android Developer. I' m from tokushima. My hobby is DanceDanceRevolution.</p>
+      </div>
+    </div>
+  </div>
+{% endblock %}
+```
+
+djangoLesson/views.py
+
+```python
+def design_profile(request):
+  return render(request, 'design_profile.html')
+```
+
+djangoLesson/urls.py
+
+```python
+urlpatterns = [
+    path('', views.index),
+    ...
+    path('design_profile', views.design_profile), # 追加
+    path('admin/', admin.site.urls),
+]
+```
+
+http://127.0.0.1:8000/design_index にアクセスすると、プロフィール画面が表示されます。
+
+<img src="./images/lesson8_design_index_nav_4.png" width="40%">
 
 #### 日記投稿ページ
 
+日記を投稿できるページを作成します。Bootstrapの **forms** を利用して、タイトルと内容の二つのフォーム作成します。
+
+[https://getbootstrap.com/docs/4.3/components/forms/](https://getbootstrap.com/docs/4.3/components/forms/)
+
+```html
+{% extends "design_theme.html" %}
+{% block title %}Bootstrap Lesson{% endblock %}
+{% block head %}
+  {{ block.super }}
+  <style type="text/css">
+    body {
+      background-color: #fff;
+    }
+  </style>
+{% endblock %}
+{% block nav_current_diary_post %}
+  <li class="nav-item active">
+    <a class="nav-link" href="/design_diary_form">日記投稿</a>
+  </li>
+{% endblock %}
+{% block content %}
+  <h1>日記投稿</h1>
+  <div style="max-width: 30rem;">
+    <form>
+      <div class="form-group">
+        <label for="form__diary-title">タイトル</label>
+        <input type="text" class="form-control" id="form__diary-title" placeholder="タイトル">
+      </div>
+      <div class="form-group">
+        <label for="form__diary-content">内容</label>
+        <textarea class="form-control" id="form__diary-content" rows="10"></textarea>
+      </div>
+      <input class="btn btn-primary" type="submit" value="投稿">
+    </form>
+  </div>
+{% endblock %}
+```
+
+djangoLesson/views.py
+
+```python
+def design_diary_form(request):
+  return render(request, 'design_diary_form.html')
+```
+
+djangoLesson/urls.py
+
+```python
+urlpatterns = [
+    path('', views.index),
+    ...
+    path('design_diary_form', views.design_diary_form), # 追加
+    path('admin/', admin.site.urls),
+]
+```
+
+http://127.0.0.1:8000/design_diary_form にアクセスすると、プロフィール画面が表示されます。
 
 
+<img src="./images/lesson8_design_index_nav_5.png" width="40%">
+
+#### 課題
+
+オリジナルのページを1つ作成し、ナビーゲーションバーのリンクに追加してください。リンクを選択すると表示できるようにしてください。なお、オリジナルのページはBootstrapのデザインを1つ以上利用して作成してください。
+
+
+### PostgreSQLの利用
+
+#### 導入
+
+PostgreSQLをインストールします。
+
+・Mac
+
+```cmd
+brew install postgresql
+```
+
+次のコマンドでデータベースを起動します。
+
+```cmd
+postgres -D /usr/local/var/postgres
+```
+
+・Windows
+
+[http://www.sassy-blog.com/entry/2017/04/11/000646](http://www.sassy-blog.com/entry/2017/04/11/000646)
+
+
+データベースを作成します。
+
+```cmd
+createdb djangolesson
+```
+
+
+#### DjangoとPostgreSQLの連携
+
+Djangoのデータベース設定を変更して、PosgreSQLへ接続するようにします。
+
+PythonからPostgreSQLを使用する場合は **psycopg2** ライブラリが必要なのでインストールします。
+
+Djangoの仮想環境上で行います。
+
+```cmd
+pip3 install psycopg2 psycopg2-binary
+```
+
+djangoLesson/settings.py
+
+```python
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'djangolesson',
+        'USER': 'django',
+        'PASSWORD': '',
+        'HOST': 'localhost',
+        'PORT': 5432
+    }
+}
+```
+
+INSTALLED_APPS にプロジェクト名 djangoLesson を追加します。
+
+djangoLesson/settings.py
+
+```python
+INSTALLED_APPS = [
+    'django.contrib.admin',
+    'django.contrib.auth',
+    'django.contrib.contenttypes',
+    'django.contrib.sessions',
+    'django.contrib.messages',
+    'django.contrib.staticfiles',
+    'djangoLesson',
+]
+```
+
+タイムゾーンを変更します。
+
+djangoLesson/settings.py
+
+```python
+TIME_ZONE = 'Asia/Tokyo'
+```
+
+次に、データベースのデータをマッピングするための **Model**　クラスを作成します。
+
+djangoLesson ディレクトリの中に models.py を作成して次のコードを実装します。
+
+```python
+from django.db import models
+from django.utils import timezone
+
+class Diary(models.Model):
+  id = models.AutoField(primary_key=True)
+  title = models.CharField(max_length=256)
+  content = models.CharField(max_length=65536)
+  date_published = models.DateTimeField(default=timezone.now)
+```
+
+マイグレーションを実行します。
+
+作成したModelクラスのマイグレーションするための設定ファイルを作成します。
+
+```cmd
+python3 manage.py makemigrations djangoLesson
+```
+
+次のログが表示されれば、設定ファイルの作成成功です。
+
+```cmd
+Migrations for 'djangoLesson':
+  djangoLesson/migrations/0001_initial.py
+    - Create model Diary
+```
+
+次に作成した設定ファイルを PostgreSQL へ反映させます。
+
+```cmd
+python3 manage.py migrate
+```
+
+次のログが表示されればマイグレーション成功です。
+
+```cmd
+Operations to perform:
+  Apply all migrations: admin, auth, contenttypes, djangoLesson, sessions
+Running migrations:
+  Applying djangoLesson.0001_initial... OK
+```
+
+#### 日記の投稿
+
+<!-- djangoLesson ディレクトリ内に **forms.py** を実装します。
+
+```python
+from django.forms import Form, CharField, URLField
+
+class DiaryForm(Form):
+  id = CharField()
+  title = CharField(max_length=256)
+  content = CharField(max_length=65536)
+``` -->
+
+djangoLesson/views.py を次のように実装します。
+
+```python
+def design_diary_post(request):
+  if request.method == 'POST' and request.POST['title'] and request.POST['content']:
+    diary = Diary.objects.create(
+      title=request.POST['title'],
+      content=request.POST['content'],
+    )
+    diary.save()
+    return redirect(to="/design_index")
+  else:
+    return render(request, 'design_diary_form.html')
+```
+
+
+#### 日記を表示
+
+
+#### 日記の更新
+
+
+
+
+#### 課題
+
+日記を削除する機能を実装してください。
 
 ## 参考文献
 
 [Python3 + Django2.0入門 - Pythonで作るWebアプリケーション開発入門 - その１](https://www.amazon.co.jp/gp/product/B07GNJW2QN)
 
 [Python3 + Django2.0入門 - Pythonで作るWebアプリケーション開発入門 - その２](https://www.amazon.co.jp/gp/product/B07GNPK25J)
-
 
 
 
