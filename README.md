@@ -11,8 +11,8 @@
 - [HTMLのレンダリング](HTMLのレンダリング)
 - [リクエストを受け取る](#リクエストを受け取る)
 - [DTLの利用](#DTLの利用)
-- [Bootstrapの利用](Bootstrapの利用)
-- [PostgreSQLの利用](PostgreSQLの利用)
+- [Bootstrapの利用](#Bootstrapの利用)
+- [PostgreSQLの利用](#PostgreSQLの利用)
 
 
 ## 開発環境
