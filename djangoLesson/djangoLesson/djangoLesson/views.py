@@ -107,7 +107,7 @@ def sample_index(request):
 
 def design_index(request):
   try:
-    # 全ての日記を日付の新しい順に取得（サンプルコードのため、ページ指定は行わずに全てを取得する）
+    # 全ての日記を日付の新しい順に取得
     diaries = Diary.objects.values().order_by('-date_published')
     return render(request, 'design_index.html', {'diaries': diaries})
   except:
@@ -116,16 +116,31 @@ def design_index(request):
 def design_profile(request):
   return render(request, 'design_profile.html')
 
+# def design_diary_form(request):
+#   return render(request, 'design_diary_form.html')
+
 def design_diary_form(request):
-  return render(request, 'design_diary_form.html')
+  if request.method == 'GET' and request.GET.get('id'):
+    diary = Diary.objects.get(id=request.GET.get('id'))
+    return render(request, 'design_diary_form.html', {'diary': diary})
+  else:
+    return render(request, 'design_diary_form.html')
 
 def design_diary_post(request):
   if request.method == 'POST' and request.POST['title'] and request.POST['content']:
-    diary = Diary.objects.create(
-      title=request.POST['title'],
-      content=request.POST['content'],
-    )
-    diary.save()
+    if 'id' in request.POST:
+      # 更新
+      diary = Diary.objects.get(id=request.POST['id'])
+      diary.title = request.POST['title']
+      diary.content = request.POST['content']
+      diary.save()
+    else:
+      # 作成
+      diary = Diary.objects.create(
+        title=request.POST['title'],
+        content=request.POST['content'],
+      )
+      diary.save()
     return redirect(to="/design_index")
   else:
     return render(request, 'design_diary_form.html')

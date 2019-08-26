@@ -27,10 +27,10 @@
         <h5 class="mb-1">{{ diary.title }}</h5>
         <small style="color: gray;">{{ diary.date_published | date:"Y/m/d P" }}</small>
       </div>
-      <!-- 改行コードを反映させるために linebreaksbr 利用する -->
+      <!-- diary.contentの改行コードを反映させるために linebreaksbr 利用する -->
       <p class="mb-1" style="margin: 8px;">{{ diary.content | linebreaksbr }}</p>
       <div class="content__diary-edit">
-        編集
+        <a href="/design_diary_form?id={{ diary.id }}">編集</a>
       </div>
     </li>
     {% endfor %}

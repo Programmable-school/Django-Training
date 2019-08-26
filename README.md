@@ -1154,7 +1154,7 @@ HTMLの **nav** 要素を使用してclassにBootstrapのタグを埋め込み�
 
 ```html
 <nav class="navbar navbar-dark bg-dark navbar-expand-lg">
-  <a class="navbar-brand" href="/">私の日記</a>
+  <a class="navbar-brand" href="/design_index">私の日記</a>
 </nav>
 ```
 
@@ -1192,7 +1192,7 @@ templates/design_index.html
   ... 
   <body>
     <nav class="navbar navbar-dark bg-dark navbar-expand-lg">
-      <a class="navbar-brand" href="/">私の日記</a>
+      <a class="navbar-brand" href="/design_index">私の日記</a>
       <!-- 追加 -->
       <button class="navbar-toggler" type="button" data-toggle="collapse" 
         data-target="#navbarText" aria-controls="navbarText" aria-expanded="false" aria-label="Toggle navigation">
@@ -1251,7 +1251,7 @@ templates/design_theme.html を実装します。
   <body>
     {% block nav %}
       <nav class="navbar navbar-dark bg-dark navbar-expand-lg">
-        <a class="navbar-brand" href="/">私の日記</a>
+        <a class="navbar-brand" href="/design_index">私の日記</a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" 
           data-target="#navbarText" aria-controls="navbarText" aria-expanded="false" aria-label="Toggle navigation">
           <span class="navbar-toggler-icon" />
@@ -1582,40 +1582,165 @@ Running migrations:
 
 #### 日記の投稿
 
-<!-- djangoLesson ディレクトリ内に **forms.py** を実装します。
+日記の投稿するフォームを作成します。１つのフォームで日記の「作成」と「更新」ともできるようにします。
 
-```python
-from django.forms import Form, CharField, URLField
+日記の作成と更新処理を行う design_diary_post を追加します。
 
-class DiaryForm(Form):
-  id = CharField()
-  title = CharField(max_length=256)
-  content = CharField(max_length=65536)
-``` -->
-
-djangoLesson/views.py を次のように実装します。
+djangoLesson/views.py
 
 ```python
 def design_diary_post(request):
   if request.method == 'POST' and request.POST['title'] and request.POST['content']:
-    diary = Diary.objects.create(
-      title=request.POST['title'],
-      content=request.POST['content'],
-    )
-    diary.save()
+    if 'id' in request.POST:
+      # 更新
+      diary = Diary.objects.get(id=request.POST['id'])
+      diary.title = request.POST['title']
+      diary.content = request.POST['content']
+      diary.save()
+    else:
+      # 作成
+      diary = Diary.objects.create(
+        title=request.POST['title'],
+        content=request.POST['content'],
+      )
+      diary.save()
     return redirect(to="/design_index")
   else:
     return render(request, 'design_diary_form.html')
 ```
 
+djangoLesson/urls.py
+
+```python
+urlpatterns = [
+    path('', views.index),
+    ...
+    path('design_diary_post', views.design_diary_post), # 追加
+    path('admin/', admin.site.urls),
+]
+```
+
+
+次に design_diary_form.html 次のように変更します。
+
+templetes/design_diary_form.html
+
+```html
+{% extends "design_theme.html" %}
+{% block title %}Bootstrap Lesson{% endblock %}
+{% block head %}
+  {{ block.super }}
+  <style type="text/css">
+    body {
+      background-color: #fff;
+    }
+  </style>
+{% endblock %}
+{% block nav_current_diary_post %}
+  <li class="nav-item active">
+    <a class="nav-link" href="/design_diary_form">日記投稿</a>
+  </li>
+{% endblock %}
+{% block content %}
+  <h1>日記投稿</h1>
+  <div style="max-width: 30rem;">
+    <form action="/design_diary_post" method="POST">
+      {% csrf_token %}
+      <div class="form-group">
+        <label for="form__diary-title">タイトル</label>
+        <input type="text" class="form-control" id="form__diary-title" name="title" value="{{ diary.title }}" placeholder="タイトル">
+      </div>
+      <div class="form-group">
+        <label for="form__diary-content">内容</label>
+        <textarea class="form-control" id="form__diary-content" name="content" rows="10">{{ diary.content }}</textarea>
+      </div>
+      {% if diary.id %}
+        <input type="hidden" name="id" value="{{ diary.id }}">
+        <input class="btn btn-primary" type="submit" value="更新">
+      {% else %}
+        <input class="btn btn-primary" type="submit" value="投稿">
+      {% endif %}
+    </form>
+  </div>
+{% endblock %}
+```
+
+djangoLesson/views.py
+
+```python
+def design_diary_form(request):
+  if request.method == 'GET' and request.GET.get('id'):
+    diary = Diary.objects.get(id=request.GET.get('id'))
+    return render(request, 'design_diary_form.html', {'diary': diary})
+  else:
+    return render(request, 'design_diary_form.html')
+```
+
+フォームを送信すると design_diary_post へリクエストされ design_diary_post 内で 送られてきたデータをデータベースへ保存します。
 
 #### 日記を表示
 
+保存した日記を全て表示します。
 
-#### 日記の更新
+design_index 内で保存されたデータベースを全て取り出し日付の降順で表示するようにします。
 
+djangoLesson/views.py
 
+```python
+def design_index(request):
+  try:
+    # 全ての日記を日付の新しい順に取得
+    diaries = Diary.objects.values().order_by('-date_published')
+    return render(request, 'design_index.html', {'diaries': diaries})
+  except:
+    return render(request, 'design_index.html', {'diaries': []})
+```
 
+templetes/design_index.html
+
+```html
+{% extends "design_theme.html" %}
+{% block title %}Bootstrap Lesson{% endblock %}
+{% block head %}
+  {{ block.super }}
+  <style type="text/css">
+    body {
+      background-color: #fff;
+    }
+    .content__diary-edit {
+      text-align: right;
+      font-size: 0.9em; 
+    }
+  </style>
+{% endblock %}
+{% block nav_current_home %}
+  <li class="nav-item active">
+    <a class="nav-link" href="/design_index">ホーム</a>
+  </li>
+{% endblock %}
+{% block content %}
+  <h1>日記一覧</h1>
+  <ul class="list-group col-md-8">
+    {% for diary in diaries %}
+    <li class="list-group-item">
+      <div class="d-flex w-100 justify-content-between">
+        <h5 class="mb-1">{{ diary.title }}</h5>
+        <small style="color: gray;">{{ diary.date_published | date:"Y/m/d P" }}</small>
+      </div>
+      <!-- diary.contentの改行コードを反映させるために linebreaksbr 利用する -->
+      <p class="mb-1" style="margin: 8px;">{{ diary.content | linebreaksbr }}</p>
+      <div class="content__diary-edit">
+        <a href="/design_diary_form?id={{ diary.id }}">編集</a>
+      </div>
+    </li>
+    {% endfor %}
+  </ul>
+{% endblock %}
+```
+
+http://127.0.0.1:8000/design_diary_form で日記を投稿すると、ホーム画面で保存された日記が表示されるのを確認できます。
+
+<img src="./images/lesson9_design_index_1.png" width="50%">
 
 #### 課題
 
