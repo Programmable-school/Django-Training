@@ -8,7 +8,7 @@
 - [ルーティング](#ルーティング)
 - [リクエストメソッド](#リクエストメソッド)
 - [静的ファイルの利用](#静的ファイルの利用)
-- [HTMLのレンダリング](HTMLのレンダリング)
+- [HTMLのレンダリング](#HTMLのレンダリング)
 - [リクエストを受け取る](#リクエストを受け取る)
 - [DTLの利用](#DTLの利用)
 - [Bootstrapの利用](#Bootstrapの利用)
@@ -1482,6 +1482,8 @@ postgres -D /usr/local/var/postgres
 createdb djangolesson
 ```
 
+
+[PostgreSQLコマンドシート](./POSTGRES_SQL_COMMAND.md)
 
 #### DjangoとPostgreSQLの連携
 
