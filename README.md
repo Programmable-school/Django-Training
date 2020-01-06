@@ -24,6 +24,8 @@
 
 djangoをインストールします。
 
+Windowsの場合は[こちらの記事](http://masuo200.hatenablog.com/entry/Python/Django)を参考にインストールしてください。
+
 ```cmd
 $ pip3 install django
 
@@ -649,7 +651,7 @@ urlpatterns = [
 ]
 ```
 
-http://127.0.0.1:8000/post_form にアクセスしてフォームに入力後、送信ボタンを押すと 確認画面に遷移されます。
+http://127.0.0.1:8000/post_form にアクセスしてフォームに入力後、送信ボタンを押すと確認画面に遷移されます。
 
 <img src="./images/lesson6_post_form.png" width="30%">
 
@@ -1473,8 +1475,7 @@ postgres -D /usr/local/var/postgres
 
 ・Windows
 
-[http://www.sassy-blog.com/entry/2017/04/11/000646](http://www.sassy-blog.com/entry/2017/04/11/000646)
-
+[こちらの記事](https://qiita.com/ynkgw/items/bf4a4a773e7a7cb0172f)を参考にしてインストールしてください。
 
 データベースを作成します。
 
