@@ -1059,7 +1059,7 @@ djangoLesson/views.py
 
 ```python
 def sample_index(request):
-  return render(request, 'sample_index.html')
+  return render(request, 'sample_index.html', {'title': 'タイトル', 'message': 'メッセージ'})
 ```
 
 djangoLesson/urls.py
